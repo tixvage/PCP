@@ -1,0 +1,5 @@
+io :: @import "IO";
+
+main :: () void {
+    io.println("Hello, World\n");
+}
