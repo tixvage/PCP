@@ -3,8 +3,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <stdint.h>
-#include <sys/types.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
+#include <unistd.h>
 
 void pcp_compile(char* src)
 {
@@ -19,11 +21,30 @@ void pcp_compile(char* src)
     free(lexer);
 }
 
+static struct stat s;
+static int fd;
+
 void pcp_compile_file(const char* filename)
 {
-    char* src = pcp_read_file(filename);
+    char* src = pcp_read_file_mmap(filename);
     pcp_compile(src);
-    free(src);
+
+    munmap(src, s.st_size);
+    close(fd);
+}
+
+char* pcp_read_file_mmap(const char* filename)
+{
+    char *f;
+    int size;
+    fd = open(filename, O_RDONLY);
+
+    int status = fstat(fd, &s);
+    size = s.st_size;
+
+    f = (char *) mmap (0, size, PROT_READ, MAP_PRIVATE, fd, 0);
+
+    return f;
 }
 
 char* pcp_read_file(const char* filename)

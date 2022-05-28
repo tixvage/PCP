@@ -3,7 +3,13 @@
 
 int main(int argc, char* argv[])
 {
-    pcp_compile_file("examples/hello_world.pcp");
+    if (argc < 2)
+    {
+        printf("You need to provide file to compile.\n");
+        return 1;
+    }
+
+    pcp_compile_file(argv[1]);
 
     return 0;
 }

@@ -1,4 +1,4 @@
-CC = clang
+CC = gcc
 cflags = -std=c11 -O2 -g -Wall -Wextra -Wstrict-aliasing
 cflags += -Wno-pointer-arith -Wno-newline-eof -Wno-unused-parameter -Wno-gnu-statement-expression
 cflags += -Wno-gnu-compound-literal-initializer -Wno-gnu-zero-variadic-macro-arguments
