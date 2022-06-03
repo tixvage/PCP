@@ -62,7 +62,11 @@ token_t lexer_parse_id(lexer_t* lexer)
         lexer_advance(lexer);
     }
 
-    return init_token(value, TOKEN_ID);
+    char unfreed_value[strlen (value)];
+    strcpy(unfreed_value, value);
+    free(value);
+
+    return init_token(unfreed_value, TOKEN_ID);
 }
 
 token_t lexer_parse_number(lexer_t* lexer)
@@ -76,7 +80,11 @@ token_t lexer_parse_number(lexer_t* lexer)
         lexer_advance(lexer);
     }
 
-    return init_token(value, TOKEN_INT);
+    char unfreed_value[strlen (value)];
+    strcpy(unfreed_value, value);
+    free(value);
+
+    return init_token(unfreed_value, TOKEN_INT);
 }
 
 token_t lexer_parse_string(lexer_t* lexer)
@@ -120,8 +128,12 @@ token_t lexer_parse_string(lexer_t* lexer)
     }
 
     lexer_advance(lexer);
+
+    char unfreed_value[strlen (value)];
+    strcpy(unfreed_value, value);
+    free(value);
     
-    return init_token(value, TOKEN_STRING);
+    return init_token(unfreed_value, TOKEN_STRING);
 }
 
 token_t lexer_next_token(lexer_t* lexer)
