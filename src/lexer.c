@@ -38,7 +38,9 @@ token_t lexer_advance_with(lexer_t* lexer, token_t token)
 
 token_t lexer_advance_current(lexer_t* lexer, int type)
 {
-    const char value[2] = {lexer->c, '\0'};
+    char* value = calloc(2, sizeof(char));
+    value[0] = lexer->c;
+    value[1] = '\0';
     token_t token = init_token(value, type);
     lexer_advance(lexer);
 
@@ -62,11 +64,7 @@ token_t lexer_parse_id(lexer_t* lexer)
         lexer_advance(lexer);
     }
 
-    char unfreed_value[strlen (value)];
-    strcpy(unfreed_value, value);
-    free(value);
-
-    return init_token(unfreed_value, TOKEN_ID);
+    return init_token(value, TOKEN_ID);
 }
 
 token_t lexer_parse_number(lexer_t* lexer)
@@ -80,11 +78,7 @@ token_t lexer_parse_number(lexer_t* lexer)
         lexer_advance(lexer);
     }
 
-    char unfreed_value[strlen (value)];
-    strcpy(unfreed_value, value);
-    free(value);
-
-    return init_token(unfreed_value, TOKEN_INT);
+    return init_token(value, TOKEN_INT);
 }
 
 token_t lexer_parse_string(lexer_t* lexer)
@@ -128,12 +122,8 @@ token_t lexer_parse_string(lexer_t* lexer)
     }
 
     lexer_advance(lexer);
-
-    char unfreed_value[strlen (value)];
-    strcpy(unfreed_value, value);
-    free(value);
     
-    return init_token(unfreed_value, TOKEN_STRING);
+    return init_token(value, TOKEN_STRING);
 }
 
 token_t lexer_next_token(lexer_t* lexer)
