@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include "token.h"
 
+#define MAX_ID_LENGTH 500
+
 typedef struct lexer
 {
     const char* src;
