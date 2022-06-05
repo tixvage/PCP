@@ -1,6 +1,6 @@
 io :: @import "IO";
 
-main :: () void {
+main :: () -> void {
     test :int=5;
     io.println("Hello, World\n");
 }

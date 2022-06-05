@@ -11,7 +11,7 @@ planned simple 'Hello, World':
 ```pcp
 io :: @import "IO";
 
-main :: () void {
+main :: () -> void {
     io.println("Hello, World\n");
 }
 ```
