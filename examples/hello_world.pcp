@@ -1,6 +1,14 @@
 io :: @import "IO";
 
-main :: () -> void {
+get_number :: fn(a: bool) -> int {
+    if a == true {
+        return 0;
+    }
+    while;
+    return 1;
+}
+
+main :: fn() -> void {
     test :int=5;
     io.println("Hello, World\n");
 }

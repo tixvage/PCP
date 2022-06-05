@@ -75,6 +75,10 @@ token_t lexer_parse_id(lexer_t* lexer)
     strcpy(buffer, value);
     free(value);
 
+    for (int i = KEYWORD_START + 1; i < COUNT_TOKEN; i++){
+        if (streql(KEYS[i], buffer)) return init_token(buffer, i);
+    }
+
     return init_token(buffer, TOKEN_IDENTIFIER);
 }
 
@@ -159,21 +163,42 @@ token_t lexer_next_token(lexer_t* lexer)
         
         switch(lexer->c)
         {
+            case '!': {
+                if (lexer_peek(lexer, 1) == '=')
+                    return lexer_advance_two(lexer, TOKEN_BANG_EQUAL);
+                return lexer_advance_current(lexer, TOKEN_BANG);
+            } break;
+
             case ':': {
                 if (lexer_peek(lexer, 1) == ':')
                     return lexer_advance_two(lexer, TOKEN_COLON_COLON);
                 else if (lexer_peek(lexer, 1) == '=')
                     return lexer_advance_two(lexer, TOKEN_COLON_EQUAL);
 
-                return lexer_advance_with(lexer, init_token(":", TOKEN_COLON));
+                return lexer_advance_current(lexer, TOKEN_COLON);
+            } break;
+
+            case '+': {
+                if (lexer_peek(lexer, 1) == '+')
+                    return lexer_advance_two(lexer, TOKEN_PLUS_PLUS);
+                else if (lexer_peek(lexer, 1) == '=')
+                    return lexer_advance_two(lexer, TOKEN_PLUS_EQUAL);
+                return lexer_advance_current(lexer, TOKEN_PLUS);
             } break;
 
             case '-': {
-                if (lexer_peek(lexer, 1) == '>')
+                if (lexer_peek(lexer, 1) == '-')
+                    return lexer_advance_two(lexer, TOKEN_MINUS_MINUS);
+                else if (lexer_peek(lexer, 1) == '>')
                     return lexer_advance_two(lexer, TOKEN_ARROW);
+                else if (lexer_peek(lexer, 1) == '=')
+                    return lexer_advance_two(lexer, TOKEN_MINUS_EQUAL);
+                return lexer_advance_current(lexer, TOKEN_MINUS);
             } break;
 
             case '=': {
+                if (lexer_peek(lexer, 1) == '=')
+                    return lexer_advance_two(lexer, TOKEN_EQUAL_EQUAL);
                 return lexer_advance_current(lexer, TOKEN_EQUAL);
             } break;
 
@@ -192,6 +217,14 @@ token_t lexer_next_token(lexer_t* lexer)
             case '}': {
                 return lexer_advance_current(lexer, TOKEN_R_BRACE);
             } break;
+
+            case '[': {
+                return lexer_advance_current(lexer, TOKEN_L_BRACKET);
+            }
+
+            case ']': {
+                return lexer_advance_current(lexer, TOKEN_R_BRACKET);
+            }
 
             case ',': {
                 return lexer_advance_current(lexer, TOKEN_COMMA);
@@ -216,4 +249,9 @@ token_t lexer_next_token(lexer_t* lexer)
     }
 
     return init_token(0, TOKEN_EOF);
+}
+
+bool streql(const char* first, const char* second)
+{
+    return strcmp(first, second) == 0;
 }
