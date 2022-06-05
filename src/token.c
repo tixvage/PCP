@@ -72,5 +72,6 @@ const char* token_type_to_str(token_t token)
         TOKEN_STRING_CASE(KEYWORD_STRUCT);
         TOKEN_STRING_CASE(KEYWORD_SWITCH);
         TOKEN_STRING_CASE(KEYWORD_WHILE);
+        default: return "INVALID";
     }
 }

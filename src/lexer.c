@@ -49,6 +49,11 @@ token_t lexer_advance_current(lexer_t* lexer, int type)
     return token;
 }
 
+token_t lexer_advance_two(lexer_t* lexer, int type)
+{
+    return lexer_advance_with(lexer, lexer_advance_with(lexer, init_token(KEYS[type], type)));
+}
+
 void lexer_skip_ws(lexer_t* lexer)
 {
     while (isspace(lexer->c))
@@ -156,16 +161,16 @@ token_t lexer_next_token(lexer_t* lexer)
         {
             case ':': {
                 if (lexer_peek(lexer, 1) == ':')
-                    return lexer_advance_with(lexer, lexer_advance_with(lexer, init_token("::", TOKEN_COLON_COLON)));
+                    return lexer_advance_two(lexer, TOKEN_COLON_COLON);
                 else if (lexer_peek(lexer, 1) == '=')
-                    return lexer_advance_with(lexer, lexer_advance_with(lexer, init_token(":=", TOKEN_COLON_EQUAL)));
+                    return lexer_advance_two(lexer, TOKEN_COLON_EQUAL);
 
                 return lexer_advance_with(lexer, init_token(":", TOKEN_COLON));
             } break;
 
             case '-': {
                 if (lexer_peek(lexer, 1) == '>')
-                    return lexer_advance_with(lexer, lexer_advance_with(lexer, init_token("->", TOKEN_ARROW)));
+                    return lexer_advance_two(lexer, TOKEN_ARROW);
             } break;
 
             case '=': {
