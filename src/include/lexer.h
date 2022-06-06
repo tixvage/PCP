@@ -7,8 +7,7 @@
 
 #define MAX_ID_LENGTH 500
 
-typedef struct lexer
-{
+typedef struct lexer_t {
     const char* src;
     size_t src_len;
     unsigned int i;

@@ -1,8 +1,7 @@
 #include "include/token.h"
 #include <stdlib.h>
 
-token_t init_token(const char* value, int type)
-{
+token_t init_token(const char* value, int type) {
     token_t token = { 0 };
     token.value = value;
     token.type = type;
@@ -10,9 +9,8 @@ token_t init_token(const char* value, int type)
     return token;
 }
 
-const char* token_type_to_str(token_t token)
-{
-    switch (token.type){
+const char* token_type_to_str(token_t token) {
+    switch (token.type) {
         TOKEN_STRING_CASE(INVALID);
         TOKEN_STRING_CASE(IDENTIFIER);
         TOKEN_STRING_CASE(STRING_LITERAL);
