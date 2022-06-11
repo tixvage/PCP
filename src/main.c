@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "include/pcp.h"
+#include "include/parser.h"
 
 int main(int argc, char* argv[]) {
     if (argc < 2) {

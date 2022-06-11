@@ -1,5 +1,5 @@
 #include "include/pcp.h"
-#include "include/lexer.h"
+#include "include/parser.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -11,11 +11,9 @@
 
 void pcp_compile(char* src) {
     lexer_t* lexer = init_lexer(src);
-    token_t tok;
-
-    while ((tok = lexer_next_token(lexer)).type != TOKEN_EOF) {
-        printf("Token value : %s\nToken type : %s\n\n", tok.value, token_type_to_str(tok));
-    }
+    parser_t* parser = init_parser(lexer);
+    expr_t expr_tree = parser_parse(parser);
+    print_tree(&expr_tree, -1);
 
     free(lexer);
 }

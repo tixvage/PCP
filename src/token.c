@@ -9,8 +9,12 @@ token_t init_token(const char* value, int type) {
     return token;
 }
 
-const char* token_type_to_str(token_t token) {
-    switch (token.type) {
+const char* token_to_str(token_t token) {
+    return token_type_to_str(token.type);
+}
+
+const char* token_type_to_str(int token_type) {
+    switch (token_type) {
         TOKEN_STRING_CASE(INVALID);
         TOKEN_STRING_CASE(IDENTIFIER);
         TOKEN_STRING_CASE(STRING_LITERAL);

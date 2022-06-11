@@ -205,6 +205,14 @@ token_t lexer_next_token(lexer_t* lexer) {
                 return lexer_advance_current(lexer, TOKEN_AT);
             } break;
             
+            case '*': {
+                return lexer_advance_current(lexer, TOKEN_ASTERISK);
+            } break;
+            
+            case '/': {
+                return lexer_advance_current(lexer, TOKEN_SLASH);
+            } break;
+            
             case '\0': break;
 
             default: {

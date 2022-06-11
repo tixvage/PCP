@@ -125,6 +125,7 @@ static const char* KEYS[COUNT_TOKEN] = {
 };
 
 token_t init_token(const char* value, int type);
-const char* token_type_to_str(token_t token);
+const char* token_to_str(token_t token);
+const char* token_type_to_str(int token_type);
 
 #endif // !TOKEN_H
