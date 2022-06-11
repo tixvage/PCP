@@ -7,6 +7,7 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <unistd.h>
+#include <assert.h>
 
 void pcp_compile(char* src) {
     lexer_t* lexer = init_lexer(src);

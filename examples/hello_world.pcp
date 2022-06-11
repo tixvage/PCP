@@ -1,14 +1,5 @@
-io :: @import "IO";
-
-get_number :: fn(a: bool) -> int {
-    if a == true {
-        return 0;
-    }
-    while;
-    return 1;
-}
+@import "IO";
 
 main :: fn() -> void {
-    test :int=5;
-    io.println("Hello, World\n");
+    println("Hello, World!");
 }
