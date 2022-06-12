@@ -148,14 +148,12 @@ token_t lexer_next_token(lexer_t* lexer) {
             } break;
 
             case '+': {
-                if (lexer_peek(lexer, 1) == '+') return lexer_advance_two(lexer, TOKEN_PLUS_PLUS);
-                else if (lexer_peek(lexer, 1) == '=') return lexer_advance_two(lexer, TOKEN_PLUS_EQUAL);
+                if (lexer_peek(lexer, 1) == '=') return lexer_advance_two(lexer, TOKEN_PLUS_EQUAL);
                 return lexer_advance_current(lexer, TOKEN_PLUS);
             } break;
 
             case '-': {
-                if (lexer_peek(lexer, 1) == '-') return lexer_advance_two(lexer, TOKEN_MINUS_MINUS);
-                else if (lexer_peek(lexer, 1) == '>') return lexer_advance_two(lexer, TOKEN_ARROW);
+                if (lexer_peek(lexer, 1) == '>') return lexer_advance_two(lexer, TOKEN_ARROW);
                 else if (lexer_peek(lexer, 1) == '=') return lexer_advance_two(lexer, TOKEN_MINUS_EQUAL);
                 return lexer_advance_current(lexer, TOKEN_MINUS);
             } break;

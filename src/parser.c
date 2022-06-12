@@ -12,29 +12,45 @@ void print_tree(expr_t* expr, int level) {
             printf("Not implemented yet\n");
         } break;
         case EXPR_LIT_INT: {
-            print_ws(level+1);
+            print_ws(level+3);
             printf("integer literal -> %d\n", expr->as.lit_int);
         } break;
         case EXPR_BINARY_OP: {
             binary_op_t* binary_op = expr->as.binary_op;
-            print_ws(level+1);
-            printf("token -> %s\n", token_to_str(binary_op->token));
-            print_ws(level+1);
-            print_tree(&binary_op->rhs, level+1);
-            print_ws(level+1);
-            print_tree(&binary_op->lhs, level+1);
+            print_ws(level+3);
+            printf("op -> %s\n", token_to_str(binary_op->op));
+            print_ws(level+3);
+            print_tree(&binary_op->rhs, level+3);
+            print_ws(level+3);
+            print_tree(&binary_op->lhs, level+3);
+        } break;
+        case EXPR_UNARY_OP: {
+            unary_op_t* unary_op = expr->as.unary_op;
+            print_ws(level+3);
+            printf("op -> %s\n", token_to_str(unary_op->op));
+            print_ws(level+3);
+            print_tree(&unary_op->expr, level+3);
+            
         } break;
         default: printf("NULL\n"); break;
     }
 }
 
-binary_op_t* init_binary_op_t(token_t token, expr_t rhs, expr_t lhs) {
+binary_op_t* init_binary_op_t(token_t op, expr_t rhs, expr_t lhs) {
     binary_op_t* binary_op = calloc(1, sizeof(binary_op_t));
-    binary_op->token = token;
+    binary_op->op = op;
     binary_op->rhs = rhs;
     binary_op->lhs = lhs;
 
     return binary_op;
+}
+
+unary_op_t* init_unary_op_t(token_t op, expr_t expr) {
+    unary_op_t* unary_op = calloc(1, sizeof(unary_op_t));
+    unary_op->expr = expr;
+    unary_op->op = op;
+
+    return unary_op;
 }
 
 parser_t* init_parser(lexer_t* lexer) {
@@ -59,7 +75,14 @@ expr_t parser_factor(parser_t* parser) {
         parser_eat(parser, TOKEN_INTEGER_LITERAL);
         return (expr_t) {.as = {.lit_int = atoi(token.value)}, .kind = EXPR_LIT_INT};
     }
-
+    else if (token.type == TOKEN_PLUS) {
+        parser_eat(parser, TOKEN_PLUS);
+        return (expr_t) {.as = {.unary_op = init_unary_op_t(token, parser_factor(parser))}, .kind = EXPR_UNARY_OP};
+    }
+    else if (token.type == TOKEN_MINUS) {
+        parser_eat(parser, TOKEN_MINUS);
+        return (expr_t) {.as = {.unary_op = init_unary_op_t(token, parser_factor(parser))}, .kind = EXPR_UNARY_OP};
+    }
     else if (token.type == TOKEN_L_PAREN) {
         parser_eat(parser, TOKEN_L_PAREN);
         expr_t node = parser_expr(parser);

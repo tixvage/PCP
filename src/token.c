@@ -37,7 +37,6 @@ const char* token_type_to_str(int token_type) {
         TOKEN_STRING_CASE(L_BRACKET);
         TOKEN_STRING_CASE(R_BRACKET);
         TOKEN_STRING_CASE(PLUS);
-        TOKEN_STRING_CASE(PLUS_PLUS);
         TOKEN_STRING_CASE(PLUS_EQUAL);
         TOKEN_STRING_CASE(MINUS);
         TOKEN_STRING_CASE(MINUS_EQUAL);
