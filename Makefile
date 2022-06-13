@@ -11,6 +11,8 @@ deps = $(objects:.o=.d)
 -include $(deps)
 .PHONY: all clean
 
+default: all
+
 all: pcp
 
 run: all

@@ -13,9 +13,10 @@ void pcp_compile(char* src) {
     lexer_t* lexer = init_lexer(src);
     parser_t* parser = init_parser(lexer);
     expr_t expr_tree = parser_parse(parser);
-    print_tree(&expr_tree, -1);
+    print_tree(&expr_tree, -3);
 
     free(lexer);
+    free(parser);
 }
 
 static struct stat s;
