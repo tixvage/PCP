@@ -75,9 +75,14 @@ typedef struct assign_t {
     expr_t left;
     expr_t right;
     token_t op;
+    enum {
+        CONST,
+        ASSIGN,
+        REASSIGN,
+    } type;
 } assign_t;
 
-assign_t* init_assign_t(expr_t left, expr_t right, token_t op);
+assign_t* init_assign_t(expr_t left, expr_t right, token_t op, int type);
 
 typedef struct var_t {
     token_t token;
@@ -93,7 +98,7 @@ expr_t parser_factor(parser_t* parser);
 expr_t parser_term(parser_t* parser);
 expr_t parser_expr(parser_t* parser);
 expr_t parser_variable(parser_t* parser);
-expr_t parser_assignment_statement(parser_t* parser);
+expr_t parser_identifier_statement(parser_t* parser);
 expr_t parser_statement(parser_t* parser);
 compound_list_t parser_statement_list(parser_t* parser);
 expr_t parser_compound_statement(parser_t* parser);

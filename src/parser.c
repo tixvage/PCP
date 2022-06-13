@@ -10,7 +10,7 @@ void print_ws(int level) {
 void print_tree(expr_t* expr, int level) {
     switch (expr->kind) {
         case EXPR_LIT_STR: {
-            printf("Not implemented yet\n");
+            printf("not implemented yet\n");
         } break;
         case EXPR_LIT_INT: {
             print_ws(level+3);
@@ -37,14 +37,27 @@ void print_tree(expr_t* expr, int level) {
             compound_t* compound = expr->as.compound;
             for (size_t i = 0; i < compound->childs.size; i++) {
                 print_ws(level+3);
-                printf("Compound:\n");
+                printf("compound:\n");
                 print_tree(&compound->childs.items[i], level+3);
             }
         } break;
         case EXPR_ASSIGN: {
             assign_t* assign = expr->as.assign;
             print_ws(level+3);
-            printf("ASSIGN:\n");
+            switch (assign->type) {
+                case CONST: {
+                    printf("const assign:\n");
+                } break;
+                case ASSIGN: {
+                    printf("assign:\n");
+                } break;
+                case REASSIGN: {
+                    printf("reassign:\n");
+                } break;
+                default: {
+                    printf("wtf assign?!?:\n");
+                } break;
+            }
             print_ws(level+3);
             print_tree(&assign->left, level+3);
             print_ws(level+3);
@@ -99,11 +112,12 @@ compound_t* init_compound_t(void) {
     return compound;
 }
 
-assign_t* init_assign_t(expr_t left, expr_t right, token_t op) {
+assign_t* init_assign_t(expr_t left, expr_t right, token_t op, int type) {
     assign_t* assign = calloc(1, sizeof(assign_t));
     assign->left = left;
     assign->right = right;
     assign->op = op;
+    assign->type = type;
     return assign;
 }
 
@@ -198,18 +212,34 @@ expr_t parser_variable(parser_t* parser) {
     return node;
 }
 
-expr_t parser_assignment_statement(parser_t* parser) {
+expr_t parser_identifier_statement(parser_t* parser) {
     expr_t left = parser_variable(parser);
-    token_t token = parser->current_token;
-    parser_eat(parser, TOKEN_COLON_EQUAL);
-    expr_t right = parser_expr(parser);
-    expr_t node = (expr_t){.as = {.assign = init_assign_t(left, right, token)}, .kind = EXPR_ASSIGN};
-    return node;
+    token_t op = parser->current_token;
+    if (op.type == TOKEN_COLON_EQUAL) {
+        parser_eat(parser, TOKEN_COLON_EQUAL);
+        expr_t right = parser_expr(parser);
+        expr_t node = (expr_t){.as = {.assign = init_assign_t(left, right, op, ASSIGN)}, .kind = EXPR_ASSIGN};
+        return node;
+    }
+    else if (op.type == TOKEN_COLON_COLON) {
+        parser_eat(parser, TOKEN_COLON_COLON);
+        expr_t right = parser_expr(parser);
+        expr_t node = (expr_t){.as = {.assign = init_assign_t(left, right, op, CONST)}, .kind = EXPR_ASSIGN};
+        return node;
+    }
+    else if (op.type == TOKEN_EQUAL) {
+        parser_eat(parser, TOKEN_EQUAL);
+        expr_t right = parser_expr(parser);
+        expr_t node = (expr_t){.as = {.assign = init_assign_t(left, right, op, REASSIGN)}, .kind = EXPR_ASSIGN};
+        return node;
+    }
+
+    assert(0 && "Expected \"::\", \":=\" or \"=\" but got something else");
 }
 
 expr_t parser_statement(parser_t* parser) {
     if (parser->current_token.type == TOKEN_L_BRACE) return parser_compound_statement(parser);
-    else if (parser->current_token.type == TOKEN_IDENTIFIER) return parser_assignment_statement(parser);
+    else if (parser->current_token.type == TOKEN_IDENTIFIER) return parser_identifier_statement(parser);
     return (expr_t){.as = {.no_op = (no_op_t){}}, .kind = EXPR_NO_OP};
 }
 

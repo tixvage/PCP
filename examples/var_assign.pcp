@@ -1,5 +1,7 @@
 {
+    const_assign :: 70;
     bruh := 69;
     haha := bruh;
     mad := - (3 / -4 ---5) - +2 ++5;
+    haha = mad;
 };
