@@ -14,6 +14,7 @@ void pcp_compile(char* src) {
     parser_t* parser = init_parser(lexer);
     expr_t expr_tree = parser_parse(parser);
     print_tree(&expr_tree, -3);
+    destroy_tree(&expr_tree);
 
     free(lexer);
     free(parser);

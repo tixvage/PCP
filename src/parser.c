@@ -82,6 +82,55 @@ void print_tree(expr_t* expr, int level) {
     }
 }
 
+void destroy_tree(expr_t* expr) {
+    switch (expr->kind) {
+        case EXPR_INVALID: {
+            assert(0 && "invalid expr wtf");
+        } break;
+        case EXPR_LIT_STR: {
+            assert(0 && "not implemented yet");
+        } break;
+        case EXPR_LIT_INT: break;
+        case EXPR_BINARY_OP: {
+            binary_op_t* bop = expr->as.binary_op;
+            destroy_tree(&bop->lhs);
+            destroy_tree(&bop->rhs);
+            free(bop);
+        } break;
+        case EXPR_UNARY_OP: {
+            unary_op_t* uop = expr->as.unary_op;
+            destroy_tree(&uop->expr);
+            free(uop);
+        } break;
+        case EXPR_COMPOUND: {
+            compound_t* c = expr->as.compound;
+            for (size_t i = 0; i < c->childs.size; i++) {
+                destroy_tree(&c->childs.items[i]);
+            }
+            free(c->childs.items);
+            free(c);
+        } break;
+        case EXPR_ASSIGN: {
+            assign_t* a = expr->as.assign;
+            destroy_tree(&a->left);
+            destroy_tree(&a->right);
+            free(a);
+        } break;
+        case EXPR_VAR: {
+            var_t* var = expr->as.var;
+            free(var->value);
+            free(var);
+        } break;
+        case EXPR_FN: {
+            function_t* fn = expr->as.function;
+            free(fn->return_value);
+            destroy_tree(&fn->compound);
+            free(fn);
+        } break;
+        case EXPR_NO_OP: break;
+    }
+}
+
 binary_op_t* init_binary_op_t(token_t op, expr_t rhs, expr_t lhs) {
     binary_op_t* binary_op = calloc(1, sizeof(binary_op_t));
     binary_op->op = op;
@@ -274,7 +323,9 @@ expr_t parser_function_statement(parser_t* parser) {
     parser_eat(parser, TOKEN_ARROW);
     expr_t return_value = parser_variable(parser);
     expr_t compound = parser_compound_statement(parser);
-    return (expr_t){.as = {.function = init_function_t(return_value.as.var->value, compound)}, .kind = EXPR_FN};
+    expr_t node = (expr_t){.as = {.function = init_function_t(return_value.as.var->value, compound)}, .kind = EXPR_FN};
+    destroy_tree(&return_value);
+    return node;
 }
 
 compound_list_t parser_statement_list(parser_t* parser) {

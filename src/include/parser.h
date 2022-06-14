@@ -44,6 +44,7 @@ typedef struct expr_t {
 } expr_t;
 
 void print_tree(expr_t* expr, int level);
+void destroy_tree(expr_t* expr);
 
 typedef struct binary_op_t {
     token_t op;
@@ -89,13 +90,13 @@ assign_t* init_assign_t(expr_t left, expr_t right, token_t op, int type);
 
 typedef struct var_t {
     token_t token;
-    const char* value;
+    char* value;
 } var_t;
 
 var_t* init_var_t(token_t token);
 
 typedef struct function_t {
-    const char* return_value;
+    char* return_value;
     expr_t compound;
 } function_t;
 
