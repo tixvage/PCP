@@ -68,6 +68,13 @@ void print_tree(expr_t* expr, int level) {
             print_ws(level+3);
             printf("name -> %s\n", var->value);
         } break;
+        case EXPR_FN: {
+            function_t* fn = expr->as.function;
+            print_ws(level+3);
+            printf("return type -> %s\n", fn->return_value);
+            print_ws(level+3);
+            print_tree(&fn->compound, level+3);
+        } break;
         case EXPR_NO_OP: {
             print_ws(level+3);
             printf("end of block\n");
@@ -130,6 +137,17 @@ var_t* init_var_t(token_t token) {
     var->value = value;
 
     return var;
+}
+
+function_t* init_function_t(const char* return_value, expr_t compound) {
+    function_t* function = calloc(1, sizeof(function_t));
+    char* value = calloc(strlen(return_value) + 1, sizeof(char));
+    strcpy(value, return_value);
+    value[strlen(return_value)] = '\0';
+    function->return_value = value;
+    function->compound = compound;
+
+    return function;
 }
 
 parser_t* init_parser(lexer_t* lexer) {
@@ -206,6 +224,7 @@ expr_t parser_expr(parser_t* parser) {
 }
 
 expr_t parser_variable(parser_t* parser) {
+    //TODO: multiple return values?
     expr_t node = (expr_t){.as = {.var = init_var_t(parser->current_token)}, .kind = EXPR_VAR};
     parser_eat(parser, TOKEN_IDENTIFIER);
 
@@ -223,6 +242,16 @@ expr_t parser_identifier_statement(parser_t* parser) {
     }
     else if (op.type == TOKEN_COLON_COLON) {
         parser_eat(parser, TOKEN_COLON_COLON);
+        if (parser->current_token.type == TOKEN_KEYWORD_FN) {
+            parser_eat(parser, TOKEN_KEYWORD_FN);
+            parser_eat(parser, TOKEN_L_PAREN);
+            //TODO: parse function arguments
+            parser_eat(parser, TOKEN_R_PAREN);
+            parser_eat(parser, TOKEN_ARROW);
+            expr_t return_value = parser_variable(parser);
+            expr_t compound = parser_compound_statement(parser);
+            return (expr_t){.as = {.function = init_function_t(return_value.as.var->value, compound)}, .kind = EXPR_FN};
+        }
         expr_t right = parser_expr(parser);
         expr_t node = (expr_t){.as = {.assign = init_assign_t(left, right, op, CONST)}, .kind = EXPR_ASSIGN};
         return node;
@@ -276,5 +305,5 @@ expr_t parser_program(parser_t* parser) {
 }
 
 expr_t parser_parse(parser_t* parser) {
-    return parser_program(parser);
+    return parser_identifier_statement(parser);
 }

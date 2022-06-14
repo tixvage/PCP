@@ -10,6 +10,7 @@ typedef struct compound_t compound_t;
 typedef struct assign_t assign_t;
 typedef struct no_op_t {} no_op_t;
 typedef struct var_t var_t;
+typedef struct function_t function_t;
 
 typedef struct parser_t {
     lexer_t* lexer;
@@ -26,6 +27,7 @@ typedef struct expr_t {
         EXPR_COMPOUND,
         EXPR_ASSIGN,
         EXPR_VAR,
+        EXPR_FN,
         EXPR_NO_OP,
     } kind;
     union {
@@ -36,6 +38,7 @@ typedef struct expr_t {
         compound_t* compound;
         assign_t* assign;
         var_t* var;
+        function_t* function;
         no_op_t no_op;
     } as;
 } expr_t;
@@ -90,6 +93,13 @@ typedef struct var_t {
 } var_t;
 
 var_t* init_var_t(token_t token);
+
+typedef struct function_t {
+    const char* return_value;
+    expr_t compound;
+} function_t;
+
+function_t* init_function_t(const char* return_value, expr_t compound);
 
 parser_t* init_parser(lexer_t* lexer);
 void parser_eat(parser_t* parser, int token_type);
