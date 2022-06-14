@@ -72,7 +72,6 @@ void print_tree(expr_t* expr, int level) {
             function_t* fn = expr->as.function;
             print_ws(level+3);
             printf("return type -> %s\n", fn->return_value);
-            print_ws(level+3);
             print_tree(&fn->compound, level+3);
         } break;
         case EXPR_NO_OP: {
@@ -243,14 +242,9 @@ expr_t parser_identifier_statement(parser_t* parser) {
     else if (op.type == TOKEN_COLON_COLON) {
         parser_eat(parser, TOKEN_COLON_COLON);
         if (parser->current_token.type == TOKEN_KEYWORD_FN) {
-            parser_eat(parser, TOKEN_KEYWORD_FN);
-            parser_eat(parser, TOKEN_L_PAREN);
-            //TODO: parse function arguments
-            parser_eat(parser, TOKEN_R_PAREN);
-            parser_eat(parser, TOKEN_ARROW);
-            expr_t return_value = parser_variable(parser);
-            expr_t compound = parser_compound_statement(parser);
-            return (expr_t){.as = {.function = init_function_t(return_value.as.var->value, compound)}, .kind = EXPR_FN};
+            expr_t right = parser_function_statement(parser);
+            //TODO: compound must be a function
+            return (expr_t){.as = {.assign = init_assign_t(left, right, op, CONST)}, .kind = EXPR_ASSIGN};
         }
         expr_t right = parser_expr(parser);
         expr_t node = (expr_t){.as = {.assign = init_assign_t(left, right, op, CONST)}, .kind = EXPR_ASSIGN};
@@ -270,6 +264,17 @@ expr_t parser_statement(parser_t* parser) {
     if (parser->current_token.type == TOKEN_L_BRACE) return parser_compound_statement(parser);
     else if (parser->current_token.type == TOKEN_IDENTIFIER) return parser_identifier_statement(parser);
     return (expr_t){.as = {.no_op = (no_op_t){}}, .kind = EXPR_NO_OP};
+}
+
+expr_t parser_function_statement(parser_t* parser) {
+    parser_eat(parser, TOKEN_KEYWORD_FN);
+    parser_eat(parser, TOKEN_L_PAREN);
+    //TODO: parse function arguments
+    parser_eat(parser, TOKEN_R_PAREN);
+    parser_eat(parser, TOKEN_ARROW);
+    expr_t return_value = parser_variable(parser);
+    expr_t compound = parser_compound_statement(parser);
+    return (expr_t){.as = {.function = init_function_t(return_value.as.var->value, compound)}, .kind = EXPR_FN};
 }
 
 compound_list_t parser_statement_list(parser_t* parser) {

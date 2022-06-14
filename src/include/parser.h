@@ -110,6 +110,7 @@ expr_t parser_expr(parser_t* parser);
 expr_t parser_variable(parser_t* parser);
 expr_t parser_identifier_statement(parser_t* parser);
 expr_t parser_statement(parser_t* parser);
+expr_t parser_function_statement(parser_t* parser);
 compound_list_t parser_statement_list(parser_t* parser);
 expr_t parser_compound_statement(parser_t* parser);
 expr_t parser_program(parser_t* parser);
