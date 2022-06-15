@@ -9,9 +9,13 @@ planned simple 'Hello, World':
 
 
 ```pcp
-io :: @import "IO";
+#import "io" as io;
 
-main :: () -> void {
-    io.println("Hello, World\n");
+fn main() -> void {
+    say_hello();
+}
+
+fn say_hello() -> void {
+    io.println("%s", hello);
 }
 ```
