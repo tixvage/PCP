@@ -15,7 +15,10 @@ pub enum TokenType {
     Arrow,
     Dot,
     Plus,
+    Colon,
+    ColonColon,
     Equal,
+    ColonEqual,
     Minus,
     EOF,
 }

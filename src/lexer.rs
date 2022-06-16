@@ -128,6 +128,15 @@ impl Lexer {
                     }
                     Ok(self.advance_current(TokenType::Minus))
                 }
+                b':' => {
+                    if self.next(b'=') {
+                        return Ok(self.advance_two(TokenType::ColonEqual));
+                    } else if self.next(b':') {
+                        return Ok(self.advance_two(TokenType::ColonColon));
+                    }
+
+                    Ok(self.advance_current(TokenType::Colon))
+                }
                 b'=' => Ok(self.advance_current(TokenType::Equal)),
                 b'.' => Ok(self.advance_current(TokenType::Dot)),
                 b'+' => Ok(self.advance_current(TokenType::Plus)),
