@@ -1,0 +1,12 @@
+function main() -> void {
+    println("Hello, World!")
+}
+
+
+io :: #import "IO";
+const_number :: 800;
+global_var := 20;
+
+main :: fn() -> void {
+    io.println("Hello, World!");
+};
