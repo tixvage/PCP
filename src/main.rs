@@ -1,4 +1,7 @@
-use pcp::lexer::Lexer;
+use pcp::{
+    lexer::{Lexer, Location},
+    token::{Token, TokenType},
+};
 
 const HELP: &str = "\
 PCP compiler
@@ -35,7 +38,13 @@ fn parse_args() -> Result<String, String> {
 }
 
 fn compile(file_path: String) {
-    let lexer = Lexer::new(file_path);
+    let contents = std::fs::read_to_string(file_path).unwrap();
+    let mut lexer = Lexer::new(contents);
+    let mut token = Token::new(TokenType::Invalid, Location::default());
+    while token.type_ != TokenType::EOF {
+        token = lexer.get_next_token().unwrap();
+        println!("{:?}", token);
+    }
 }
 
 fn main() {
