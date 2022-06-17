@@ -1,4 +1,12 @@
-main :: fn() -> void {
+main :: fn() -> i32 {
     a := 40;
+    say_hi(a);
     a = 20;
+    say_hi(a);
+
+    return 0;
+}
+
+say_hi :: fn(a: i32) -> void {
+    print(a);
 }

@@ -82,9 +82,30 @@ impl Parser {
         self.current_token = self.lexer.get_next_token().unwrap();
     }
 
-    //TODO: not Funtion TopAssignment
-    fn parse_top_assignment(&mut self) -> Result<Function, PcpError> {
+    fn parse_function(&mut self, name: String) -> Result<Function, PcpError> {
         self.next();
+        if self.current_token.type_ != TokenType::LParen {
+            return Err(PcpError::Parser(
+                "expected ( after fn".to_string(),
+                self.current_token.loc,
+            ));
+        }
+        todo!()
+    }
+
+    //TODO: not Funtion TopAssignment
+    fn parse_top_assignment(&mut self, name: String) -> Result<Function, PcpError> {
+        self.next();
+        match &self.current_token {
+            Token {
+                type_: TokenType::Identifier(id),
+                loc: _,
+            } if id == "fn" => {
+                return self.parse_function(name);
+            }
+            _ => {}
+        }
+        println!("{:?}", self.current_token);
         todo!()
     }
 
@@ -93,12 +114,13 @@ impl Parser {
         while self.current_token.type_ != TokenType::EOF {
             match &self.current_token {
                 Token {
-                    type_: TokenType::Identifier(_),
+                    type_: TokenType::Identifier(name),
                     loc: _,
                 } => {
+                    let name = name.clone();
                     self.next();
                     if self.current_token.type_ == TokenType::ColonColon {
-                        file.fns.push(self.parse_top_assignment().unwrap());
+                        file.fns.push(self.parse_top_assignment(name).unwrap());
                     } else {
                         return Err(PcpError::Parser(
                             String::from("Language just supports const assignments at top for now"),

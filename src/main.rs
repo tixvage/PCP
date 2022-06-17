@@ -1,5 +1,6 @@
 use pcp::{
     lexer::Lexer,
+    parser::Parser,
     token::{Token, TokenType},
 };
 
@@ -39,13 +40,16 @@ fn parse_args() -> Result<String, String> {
 
 fn compile(file_path: String) {
     let contents = std::fs::read_to_string(file_path).unwrap();
-    let mut lexer = Lexer::new(contents);
-    let mut token = Token::new(TokenType::Invalid, Default::default());
+    let lexer = Lexer::new(contents);
+    let _token = Token::new(TokenType::Invalid, Default::default());
 
-    while token.type_ != TokenType::EOF {
-        token = lexer.get_next_token().unwrap();
-        println!("{:?}", token);
-    }
+    let mut parser = Parser::new(lexer);
+    _ = parser.parse_file();
+
+    //while token.type_ != TokenType::EOF {
+    //    token = lexer.get_next_token().unwrap();
+    //    println!("{:?}", token);
+    //}
 }
 
 fn main() {
