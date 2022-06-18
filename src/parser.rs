@@ -82,6 +82,10 @@ impl Parser {
         self.current_token = self.lexer.get_next_token().unwrap();
     }
 
+    fn parse_block(&mut self) -> Result<Block, PcpError> {
+        todo!()
+    }
+
     fn parse_function(&mut self, name: String) -> Result<Function, PcpError> {
         self.next();
         if self.current_token.type_ != TokenType::LParen {
@@ -90,7 +94,96 @@ impl Parser {
                 self.current_token.loc,
             ));
         }
-        todo!()
+
+        let mut args = Vec::new();
+        self.next();
+        while self.current_token.type_ != TokenType::EOF {
+            match &self.current_token.type_ {
+                TokenType::RParen => {
+                    self.next();
+                    break;
+                }
+                //TODO: proper comma
+                TokenType::Comma => self.next(),
+                TokenType::Identifier(name) => {
+                    let arg_name = name.clone();
+                    self.next();
+
+                    if self.current_token.type_ != TokenType::Colon {
+                        return Err(PcpError::Parser(
+                            "expected ':'".to_string(),
+                            self.current_token.loc,
+                        ));
+                    }
+
+                    self.next();
+
+                    if let TokenType::Identifier(name) = &self.current_token.type_ {
+                        let arg_type = match name.as_str() {
+                            "string" => Type::String,
+                            "void" => Type::Void,
+                            "i32" => Type::Integer,
+                            _ => {
+                                return Err(PcpError::Parser(
+                                    format!("wrong type {name}"),
+                                    self.current_token.loc,
+                                ));
+                            }
+                        };
+                        args.push((arg_name, arg_type));
+                        self.next();
+                    } else {
+                        return Err(PcpError::Parser(
+                            "expected type of argument but found something else".to_string(),
+                            self.current_token.loc,
+                        ));
+                    }
+                }
+                _ => {
+                    return Err(PcpError::Parser(
+                        "expected type or name of args in function definition".to_string(),
+                        self.current_token.loc,
+                    ))
+                }
+            }
+        }
+
+        if self.current_token.type_ != TokenType::Arrow {
+            return Err(PcpError::Parser(
+                "expected '->' after )".to_string(),
+                self.current_token.loc,
+            ));
+        }
+
+        self.next();
+
+        if let TokenType::Identifier(id) = &self.current_token.type_ {
+            let return_type = match id.as_str() {
+                "string" => Type::String,
+                "void" => Type::Void,
+                "i32" => Type::Integer,
+                _ => {
+                    return Err(PcpError::Parser(
+                        format!("wrong return type {name}"),
+                        self.current_token.loc,
+                    ));
+                }
+            };
+            self.next();
+            let block = self.parse_block().unwrap();
+            let function = Function {
+                name,
+                args,
+                block,
+                return_type,
+            };
+            return Ok(function);
+        } else {
+            return Err(PcpError::Parser(
+                "expected return type after '->'".to_string(),
+                self.current_token.loc,
+            ));
+        }
     }
 
     //TODO: not Funtion TopAssignment

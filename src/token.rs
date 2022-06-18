@@ -20,6 +20,7 @@ pub enum TokenType {
     Equal,
     ColonEqual,
     Minus,
+    Comma,
     EOF,
 }
 

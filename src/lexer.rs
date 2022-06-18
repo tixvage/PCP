@@ -140,6 +140,7 @@ impl Lexer {
                 b'=' => Ok(self.advance_current(TokenType::Equal)),
                 b'.' => Ok(self.advance_current(TokenType::Dot)),
                 b'+' => Ok(self.advance_current(TokenType::Plus)),
+                b',' => Ok(self.advance_current(TokenType::Comma)),
                 b'\0' => break,
 
                 _ => Err(PcpError::Lexer(
