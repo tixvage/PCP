@@ -1,6 +1,6 @@
 use crate::{
     error::PcpError,
-    lexer::Lexer,
+    lexer::{Lexer, Location},
     token::{Token, TokenType},
 };
 
@@ -33,6 +33,17 @@ pub enum Type {
     String,
     Void,
     Integer,
+}
+
+fn str_as_type(name: &str, loc: Location) -> Result<Type, PcpError> {
+    return match name {
+        "string" => Ok(Type::String),
+        "void" => Ok(Type::Void),
+        "i32" => Ok(Type::Integer),
+        _ => {
+            return Err(PcpError::Parser(format!("wrong return type {name}"), loc));
+        }
+    };
 }
 
 pub enum Expression {
@@ -87,11 +98,26 @@ impl Parser {
     }
 
     fn parse_vardecl(&mut self, name: String) -> Result<VarDecl, PcpError> {
-        todo!("parse_vardecl")
+        if let TokenType::Identifier(type_) = &self.current_token.type_ {
+            let type_ = str_as_type(type_, self.current_token.loc).unwrap();
+            self.next();
+            if self.current_token.type_ != TokenType::Equal {
+                return Err(PcpError::Parser(
+                    "expected '=' after type".to_string(),
+                    self.current_token.loc,
+                ));
+            }
+            self.next();
+            return Ok(VarDecl { type_, name });
+        } else {
+            return Err(PcpError::Parser(
+                "expected type after ':'".to_string(),
+                self.current_token.loc,
+            ));
+        }
     }
 
     fn parse_statement(&mut self) -> Result<Statement, PcpError> {
-        dbg!(&self.current_token);
         match &self.current_token.type_ {
             TokenType::Identifier(id) if id == "return" => {
                 self.next();
@@ -173,17 +199,7 @@ impl Parser {
                     self.next();
 
                     if let TokenType::Identifier(name) = &self.current_token.type_ {
-                        let arg_type = match name.as_str() {
-                            "string" => Type::String,
-                            "void" => Type::Void,
-                            "i32" => Type::Integer,
-                            _ => {
-                                return Err(PcpError::Parser(
-                                    format!("wrong type {name}"),
-                                    self.current_token.loc,
-                                ));
-                            }
-                        };
+                        let arg_type = str_as_type(name.as_str(), self.current_token.loc).unwrap();
                         args.push((arg_name, arg_type));
                         self.next();
                     } else {
@@ -212,17 +228,7 @@ impl Parser {
         self.next();
 
         if let TokenType::Identifier(id) = &self.current_token.type_ {
-            let return_type = match id.as_str() {
-                "string" => Type::String,
-                "void" => Type::Void,
-                "i32" => Type::Integer,
-                _ => {
-                    return Err(PcpError::Parser(
-                        format!("wrong return type {name}"),
-                        self.current_token.loc,
-                    ));
-                }
-            };
+            let return_type = str_as_type(id.as_str(), self.current_token.loc).unwrap();
             self.next();
             let block = self.parse_block().unwrap();
             let function = Function {
