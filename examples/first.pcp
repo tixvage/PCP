@@ -1,5 +1,5 @@
 main :: fn() -> i32 {
-    a := 40;
+    a :i32 =  40;
     say_hi(a);
     a = 20;
     say_hi(a);

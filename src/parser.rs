@@ -82,12 +82,40 @@ impl Parser {
         self.current_token = self.lexer.get_next_token().unwrap();
     }
 
+    fn parse_expression(&mut self) -> Result<Expression, PcpError> {
+        todo!("parse_expression");
+    }
+
+    fn parse_vardecl(&mut self, name: String) -> Result<VarDecl, PcpError> {
+        todo!("parse_vardecl")
+    }
+
     fn parse_statement(&mut self) -> Result<Statement, PcpError> {
+        dbg!(&self.current_token);
+        match &self.current_token.type_ {
+            TokenType::Identifier(id) if id == "return" => {
+                self.next();
+                let expr = self.parse_expression().unwrap();
+                return Ok(Statement::Return(expr));
+            }
+            TokenType::Identifier(id) => {
+                let id = id.clone();
+                self.next();
+
+                if let TokenType::Colon = self.current_token.type_ {
+                    self.next();
+                    let var_decl = self.parse_vardecl(id).unwrap();
+                    let expr = self.parse_expression();
+                }
+            }
+            _ => {}
+        }
         todo!("parse_statement")
     }
 
     fn parse_block(&mut self) -> Result<Block, PcpError> {
         let mut block = Block { stmts: Vec::new() };
+        self.next();
         while self.current_token.type_ != TokenType::EOF {
             match &self.current_token.type_ {
                 //TODO: implement child blocks
