@@ -1,0 +1,3 @@
+main :: fn(deneme: string, kes: i32) -> void {
+
+}

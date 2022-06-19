@@ -82,8 +82,34 @@ impl Parser {
         self.current_token = self.lexer.get_next_token().unwrap();
     }
 
+    fn parse_statement(&mut self) -> Result<Statement, PcpError> {
+        todo!("parse_statement")
+    }
+
     fn parse_block(&mut self) -> Result<Block, PcpError> {
-        todo!()
+        let mut block = Block { stmts: Vec::new() };
+        while self.current_token.type_ != TokenType::EOF {
+            match &self.current_token.type_ {
+                //TODO: implement child blocks
+                TokenType::RCurly => {
+                    self.next();
+                    return Ok(block);
+                }
+                TokenType::Semicolon => {
+                    self.next();
+                }
+                _ => {
+                    let statement = self.parse_statement();
+                    block.stmts.push(statement.unwrap());
+                    self.next();
+                }
+            }
+        }
+
+        Err(PcpError::Parser(
+            "expected } for closing block".to_string(),
+            self.current_token.loc,
+        ))
     }
 
     fn parse_function(&mut self, name: String) -> Result<Function, PcpError> {
