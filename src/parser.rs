@@ -108,12 +108,12 @@ impl Parser {
                 ));
             }
             self.next();
-            return Ok(VarDecl { type_, name });
+            Ok(VarDecl { type_, name })
         } else {
-            return Err(PcpError::Parser(
+            Err(PcpError::Parser(
                 "expected type after ':'".to_string(),
                 self.current_token.loc,
-            ));
+            ))
         }
     }
 
@@ -237,12 +237,12 @@ impl Parser {
                 block,
                 return_type,
             };
-            return Ok(function);
+            Ok(function)
         } else {
-            return Err(PcpError::Parser(
+            Err(PcpError::Parser(
                 "expected return type after '->'".to_string(),
                 self.current_token.loc,
-            ));
+            ))
         }
     }
 

@@ -78,10 +78,10 @@ impl Lexer {
             self.advance();
         }
 
-        return match value.parse::<i32>() {
+        match value.parse::<i32>() {
             Ok(num) => Ok(Token::new(TokenType::Number(num), self.current_loc)),
             Err(err) => Err(PcpError::Lexer(err.to_string(), self.current_loc)),
-        };
+        }
     }
 
     fn advance_with(&mut self, token: Token) -> Token {
